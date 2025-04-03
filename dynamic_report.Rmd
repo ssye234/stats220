@@ -1,0 +1,105 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+#Loading Library(s)
+library(tidyverse)
+
+#CSV Reading Setup
+bev_consump_responses <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR33C9Hy4C0zt6V0awA8pcrpuhwzG5zorc-Bikvu9i4aD1PfsPBjv-ZSOwzO6U-DgDuFEHCZN_A6oc5/pub?output=csv"
+logged_data <- read_csv(bev_consump_responses)
+
+#Renaming Variables
+latest_data <- logged_data %>%
+  rename(timestamp = 1,
+         fav_location = 2,
+         year_of_study = 3,
+         semesters_consumption = 4,
+         reason = 5,
+         quantity = 6,
+         time = 7,
+         location_today = 8,
+         type_today = 9,
+         discount = 10,
+         satisfaction = 11)
+```
+
+```{css}
+body {font-family: Courier New;
+      background-color: black;
+      color: white;
+      text-align: center}
+      
+ img:hover {transform: scale(1.02);
+            transition: 0.3s ease-in-out}
+
+h2 {color: #bfbfbf}
+p  {color: #40ff00}
+
+```
+
+## What's going on with this data?
+
+You need to change the contents of this Rmd! Replace the R code and markdown give below in this template document.
+
+```{r, fig.width=10, echo=FALSE}
+#Summary Value 1
+top_drink <- latest_data %>%
+  count(type_today, sort = TRUE) %>%
+  slice(1)
+popular_time <- latest_data %>%
+  count(time, sort = TRUE) %>%
+  slice(1)
+common_reason <- latest_data %>%
+  count(reason, sort = TRUE) %>%
+  slice(1)
+
+#Bar Chart 1
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = type_today, fill = time)) +
+  labs(title = "What does UoA love to drink?",
+       subtitle = "Comparing types of beverages with their frequencies of purchase, subset by time of day",
+       caption = "Source: Google Form Survey for UoA students",
+       x = "Type of Beverage",
+       y = "Frequency")
+
+#Dynamic Comment 1
+dynamcom1 <- paste("The most popular drink on campus is", top_drink$type_today, "with", top_drink$n, "logged purchases. This drink is most popularly purchased in the", popular_time$type_today, "with the most common reason being", common_reason$reason, ". These connecting social factors can be taken into context for better analysis and reasoning.")
+cat(paste(strwrap(dynamcom1, width = 130), collapse = "\n"))
+```
+
+This bar chart shows the frequency of beverage types consumed by UoA students, broken down by time of day. Coffee and Milk Tea/Bubble Tea are the most popular choices overall with Coffees being in high demand during the early morning period and Milk Tea/Bubble Tea being in high demand during the afternoon period, whereas late morning time frame seems to have a fair bit of variation across demands of drink types. Peak consumption of all beverages occurs in the afternoon and late morning, which aligns with typical energy slumps, attendance and social breaks between classes(also aligning with the most common reason for purchase being socializing with friends. This graph helps identify daily demand patterns and can inform decisions for cafe peak service hours.
+
+```{r, fig.width=10, echo=FALSE}
+#Summary Value 2
+avg_semesters_discounty <- latest_data %>%
+  filter(discount == "Yes") %>%
+  summarise(avg = mean(semesters_consumption)) %>%
+  pull(avg)
+avg_semesters_discountn <- latest_data %>%
+  filter(discount == "No") %>%
+  summarise(avg = mean(semesters_consumption)) %>%
+  pull(avg)
+
+#Bar Chart 2
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(y = semesters_consumption, fill = discount)) +
+  labs(title = "Who's better at the bargain?",
+       subtitle = "Comparing the time/experience of student customers with their discount lucks",
+       caption = "Source: Google Form Survey for UoA students",
+       y = "Experience in buying drinks (Semesters)",
+       x = "Discount Ratio")
+
+#Dynamic Comment 2
+dynamcom2 <- paste("Among students who received a discount, the average beverage-buying experience is", round(avg_semesters_discounty, 1), "semesters, compared to the undiscounted students' average of only", round(avg_semesters_discountn, 1), "semesters. There seems to be a clear difference with reason, but further analysis would be need to conclusively deduce how more experienced students are more sharp in grabbing discounts.")
+cat(paste(strwrap(dynamcom2, width = 130), collapse = "\n"))
+
+```
+
+This horizontal bar chart compares students' drink-buying experience (in semesters) with whether they received discounts. Interestingly, more experienced students (6+ semesters) consistently receive more discounts than newer students. This could reflect either a lack of awareness or access to discount schemes for new students, suggesting further study into factors influencing discount eligibility or discount marketing.
