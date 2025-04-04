@@ -39,12 +39,11 @@ body {font-family: Courier New;
 
 h2 {color: #bfbfbf}
 p  {color: #40ff00}
-
 ```
 
-## What's going on with this data?
+## Logged Data of UoA Beverage Habits
 
-You need to change the contents of this Rmd! Replace the R code and markdown give below in this template document.
+This report is based on a survey I created and filled out as part of observational logging. The data was collected through Google Forms with the topic in focus being beverage consumption trends at UoA city campus by students, I then cleaned and visualized in R using the tidyverse. The goal was to uncover meaningful patterns in everyday behavior through observational logging. This dynamic report walks through the entire process, from the design of my data collection form to the final visualizations and reflections of my interest.
 
 ```{r, fig.width=10, echo=FALSE}
 #Summary Value 1
@@ -69,7 +68,7 @@ latest_data %>%
        y = "Frequency")
 
 #Dynamic Comment 1
-dynamcom1 <- paste("The most popular drink on campus is", top_drink$type_today, "with", top_drink$n, "logged purchases. This drink is most popularly purchased in the", popular_time$type_today, "with the most common reason being", common_reason$reason, ". These connecting social factors can be taken into context for better analysis and reasoning.")
+dynamcom1 <- paste("The most popular drink on campus is", top_drink$type_today, "with", top_drink$n, "logged purchases. This drink is most popularly purchased in the", popular_time$time, ", with the most common reason being", common_reason$reason,". These connecting social factors can be taken into context for better analysis and reasoning.")
 cat(paste(strwrap(dynamcom1, width = 130), collapse = "\n"))
 ```
 
